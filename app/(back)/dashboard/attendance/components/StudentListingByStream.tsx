@@ -287,7 +287,12 @@ export default function StudentListingByStream({
                         <CalendarComponent
                           mode="single"
                           selected={date}
-                          onSelect={(date) => date && setDate(date)}
+                          onSelect={(newDate) => {
+                            // Explicitly handle the case where newDate might be a DateRange
+                            if (newDate instanceof Date) {
+                              setDate(newDate);
+                            }
+                          }}
                           initialFocus
                         />
                       </PopoverContent>
@@ -330,8 +335,8 @@ export default function StudentListingByStream({
               <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 my-4">
                 <div className="bg-muted p-2 rounded-md text-sm inline-block">
                   <span className="font-medium">Session:</span>{" "}
-                  {selectedSubject?.name} class for {selectedClass?.name}{" "}
-                  {selectedStream?.stream} on {formattedDate}
+                  {selectedSubject?.label} class for {selectedClass?.label}{" "}
+                  {selectedStream?.label} on {formattedDate}
                 </div>
                 <div className="flex gap-2">
                   <Button

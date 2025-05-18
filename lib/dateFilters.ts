@@ -33,7 +33,7 @@ export const filterByDateRange = (
   data: any[], // eslint-disable-line @typescript-eslint/no-explicit-any
   startDate: string | Date,
   endDate: string | Date
-): any[] => {
+): any[] => { // eslint-disable-line @typescript-eslint/no-explicit-any
   const start = dayjs(startDate).startOf("day");
   const end = dayjs(endDate).endOf("day");
   return data.filter((item) =>

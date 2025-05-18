@@ -36,7 +36,6 @@ import {
     CreditCard,
     Users,
     MessageCircle,
-    ArrowUp,
   } from 'lucide-react';
 
 export const Categories: React.FC = () => {

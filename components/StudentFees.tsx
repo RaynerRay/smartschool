@@ -37,7 +37,7 @@ export default function StudentFees({
     value: term.id,
   }));
 
-  const [selectedTerm, setSelectedTerm] = useState<any>(termOptions[0]);
+  const [selectedTerm, setSelectedTerm] = useState<any>(termOptions[0]); // eslint-disable-line @typescript-eslint/no-explicit-any
   const [loadingFees, setLoadingFees] = useState(false);
 
   async function handleTermChangeById(termId: string) {
