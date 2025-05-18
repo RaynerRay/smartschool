@@ -1,7 +1,8 @@
 "use client";
 import React from "react";
-import ReactQuill from "react-quill";
-import "react-quill/dist/quill.snow.css";
+import ReactQuill from "react-quill-new";
+import "react-quill-new/dist/quill.snow.css";
+
 export default function QuillEditor({
   label,
   className = "sm:col-span-2",
@@ -23,6 +24,7 @@ export default function QuillEditor({
       ["clean"],
     ],
   };
+
   const formats = [
     "header",
     "bold",
@@ -38,6 +40,7 @@ export default function QuillEditor({
     "code-block",
     "color",
   ];
+
   return (
     <div className={className}>
       <label

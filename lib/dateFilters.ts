@@ -31,12 +31,13 @@ export const filterByThisYear = (data: any[]): any[] => { // eslint-disable-line
 
 export const filterByDateRange = (
   data: any[], // eslint-disable-line @typescript-eslint/no-explicit-any
-  startDate: string,
-  endDate: string
-): any[] => { // eslint-disable-line @typescript-eslint/no-explicit-any
+  startDate: string | Date,
+  endDate: string | Date
+): any[] => {
   const start = dayjs(startDate).startOf("day");
   const end = dayjs(endDate).endOf("day");
   return data.filter((item) =>
     dayjs(item.createdAt).isBetween(start, end, null, "[]")
   );
 };
+
