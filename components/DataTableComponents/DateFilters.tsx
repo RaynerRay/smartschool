@@ -7,8 +7,6 @@ import {
   filterByYesterday,
 } from "@/lib/dateFilters";
 import React, { useState } from "react";
-import Select from "react-tailwindcss-select";
-import { SelectValue } from "react-tailwindcss-select/dist/components/type";
 
 export default function DateFilters({
   data,
@@ -26,41 +24,44 @@ export default function DateFilters({
     { value: "month", label: "This Month" },
     { value: "year", label: "This year" },
   ];
-  const [selectedFilter, setSelectedFilter] = useState<SelectValue>(options[0]);
-  const handleChange = (item: any) => { // eslint-disable-line @typescript-eslint/no-explicit-any
-    const valueString = item!.value;
-    setSelectedFilter(item);
+
+  const [selectedFilter, setSelectedFilter] = useState("life");
+
+  const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const valueString = e.target.value;
+    setSelectedFilter(valueString);
     setIsSearch(false);
-    if (valueString === "life") {
-      onFilter(data);
-    } else if (valueString === "today") {
-      const filteredData = filterByToday(data);
-      onFilter(filteredData);
+
+    let filteredData = data;
+    if (valueString === "today") {
+      filteredData = filterByToday(data);
     } else if (valueString === "yesterday") {
-      const filteredData = filterByYesterday(data);
-      onFilter(filteredData);
+      filteredData = filterByYesterday(data);
     } else if (valueString === "last-7-days") {
-      const filteredData = filterByLast7Days(data);
-      onFilter(filteredData);
+      filteredData = filterByLast7Days(data);
     } else if (valueString === "month") {
-      const filteredData = filterByThisMonth(data);
-      onFilter(filteredData);
+      filteredData = filterByThisMonth(data);
     } else if (valueString === "year") {
-      const filteredData = filterByThisYear(data);
-      onFilter(filteredData);
+      filteredData = filterByThisYear(data);
     }
+
+    onFilter(filteredData);
     console.log("value:", valueString);
-    // setAnimal(value);
-    // onFilter(filteredData);
   };
+
   return (
     <div>
-      <Select
+      <select
         value={selectedFilter}
         onChange={handleChange}
-        options={options}
-        primaryColor={"indigo"}
-      />
+        className="border border-gray-300 rounded-md px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+      >
+        {options.map((option) => (
+          <option key={option.value} value={option.value}>
+            {option.label}
+          </option>
+        ))}
+      </select>
     </div>
   );
 }

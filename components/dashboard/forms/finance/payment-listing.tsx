@@ -18,7 +18,6 @@ import React, { useState } from "react";
 import { Fee, getFeesByClass, SchoolFeeData } from "@/actions/school-fees";
 import useSchoolStore from "@/store/school";
 import { Period } from "@/types/types";
-import Select from "react-tailwindcss-select";
 import { PaymentModal } from "./payment-modal";
 
 export default function PaymentListing({
@@ -198,12 +197,21 @@ export default function PaymentListing({
                   Payments {new Date().getFullYear()}
                 </h1>
                 <div className="">
-                  <Select
-                    value={selectedTerm}
-                    onChange={handleTermChange}
-                    options={termOptions}
-                    primaryColor={"blue"}
-                  />
+                <select
+  value={selectedTerm?.value}
+  onChange={(e) => {
+    const selected = termOptions.find((t) => t.value === e.target.value);
+    if (selected) handleTermChange(selected);
+  }}
+  className="border border-gray-300 rounded-md px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+>
+  {termOptions.map((option) => (
+    <option key={option.value} value={option.value}>
+      {option.label}
+    </option>
+  ))}
+</select>
+
                 </div>
 
                 <PaymentModal

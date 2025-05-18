@@ -1,18 +1,23 @@
 "use client";
 import AddNewButton from "@/components/FormInputs/AddNewButton";
 import React from "react";
-import Select from "react-tailwindcss-select";
-import { Option, Options } from "react-tailwindcss-select/dist/components/type";
-type FormSelectInputProps = {
-  options: Options;
+
+type Option = {
+  value: string;
   label: string;
-  option: Option;
-  setOption: any; // eslint-disable-line @typescript-eslint/no-explicit-any
+};
+
+type FormSelectInputProps = {
+  options: Option[];
+  label: string;
+  option: Option[]; // selected options
+  setOption: (value: Option[]) => void;
   href?: string;
   labelShown?: boolean;
   toolTipText?: string;
-  isSearchable?: boolean;
+  isSearchable?: boolean; // ignored in native select
 };
+
 export default function FormMultipleSelectInput({
   options,
   label,
@@ -21,33 +26,36 @@ export default function FormMultipleSelectInput({
   href,
   toolTipText,
   labelShown = true,
-  isSearchable = true,
 }: FormSelectInputProps) {
-  // const [results, setResults] = useState([]);
-
-  function handleChange(item: any) { // eslint-disable-line @typescript-eslint/no-explicit-any
-    setOption(item);
-    console.log(item);
-  }
+  const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const selectedValues = Array.from(e.target.selectedOptions, (o) => o.value);
+    const selectedOptions = options.filter((opt) =>
+      selectedValues.includes(opt.value)
+    );
+    setOption(selectedOptions);
+    console.log(selectedOptions);
+  };
 
   return (
-    <div className="">
+    <div>
       {labelShown && (
         <h2 className="pb-2 block text-sm font-medium leading-6 text-gray-900">
           Select {label}
         </h2>
       )}
       <div className="flex items-center space-x-2">
-        <Select
-          isSearchable={isSearchable}
-          primaryColor="blue"
-          value={option}
+        <select
+          multiple
+          value={option.map((o) => o.value)}
           onChange={handleChange}
-          options={options}
-          placeholder={label}
-          isMultiple={true}
-          isClearable={true}
-        />
+          className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+        >
+          {options.map((opt) => (
+            <option key={opt.value} value={opt.value}>
+              {opt.label}
+            </option>
+          ))}
+        </select>
         {href && toolTipText && (
           <AddNewButton toolTipText={toolTipText} href={href} />
         )}

@@ -7,10 +7,9 @@ import React, { useState } from "react";
 import { Fee, getFeesByClass, SchoolFeeData } from "@/actions/school-fees";
 import useSchoolStore from "@/store/school";
 import { Period } from "@/types/types";
-import Select from "react-tailwindcss-select";
 import { getNormalDate } from "@/lib/getNormalDate";
 import { PaymentModal } from "./dashboard/forms/finance/payment-modal";
-// import { PaymentModal } from "./payment-modal";
+
 export type Data = {
   studentProfileId: string;
   studentUserId: string;
@@ -19,6 +18,7 @@ export type Data = {
   parentUserId: string;
   parentName: string;
 };
+
 export default function StudentFees({
   terms,
   classTitle,
@@ -29,52 +29,56 @@ export default function StudentFees({
   data: Data;
 }) {
   const [fees, setFees] = useState<Fee[]>([]);
-  const [schoolFeeData, setSchoolFeeData] = useState<SchoolFeeData | null>(
-    null
-  );
-  console.log("schoolFee Data=> ", schoolFeeData);
+  const [schoolFeeData, setSchoolFeeData] = useState<SchoolFeeData | null>(null);
   const { school } = useSchoolStore();
-  const termOptions = terms.map((term) => {
-    return {
-      label: `Term ${term.term}-${term.year}`,
-      value: term.id,
-    };
-  });
-  const [selectedTerm, setSelectedTerm] = useState<any>(termOptions[0]); // eslint-disable-line @typescript-eslint/no-explicit-any
+
+  const termOptions = terms.map((term) => ({
+    label: `Term ${term.term}-${term.year}`,
+    value: term.id,
+  }));
+
+  const [selectedTerm, setSelectedTerm] = useState<any>(termOptions[0]);
   const [loadingFees, setLoadingFees] = useState(false);
-  async function handleTermChange(term: any) { // eslint-disable-line @typescript-eslint/no-explicit-any
-    console.log("Fxn fired");
-    console.log(term);
+
+  async function handleTermChangeById(termId: string) {
+    const term = termOptions.find((t) => t.value === termId);
+    if (!term) return;
+
     setFees([]);
     setLoadingFees(true);
     setSelectedTerm(term);
-    const result =
-      (await getFeesByClass(school?.id ?? "", classTitle, term.label)) || [];
+
+    const result = await getFeesByClass(school?.id ?? "", classTitle, term.label) || [];
     const schoolFee = result.find((item) => item.term === term.label);
+
     if (!schoolFee) {
       setLoadingFees(false);
       setSchoolFeeData(null);
       setFees([]);
       return;
     }
+
     setSchoolFeeData(schoolFee);
     setFees(schoolFee.fees);
     setLoadingFees(false);
   }
+
   const totalAmount = fees.reduce((acc, item) => acc + item.amount, 0);
   const paidAmount = fees.reduce(
     (acc, item) => (item.feeStatus === "PAID" ? acc + item.amount : acc),
     0
   );
   const balanceAmount = totalAmount - paidAmount;
+
   const details = {
-    periodId: selectedTerm.value ?? ("" as string),
+    periodId: selectedTerm.value ?? "",
     ...data,
     schoolFeeTitle: schoolFeeData?.title ?? "",
     term: selectedTerm.label ?? "",
     year: Number(schoolFeeData?.year) ?? new Date().getFullYear(),
     className: classTitle ?? "",
   };
+
   return (
     <Card className="border-blue-100">
       <CardHeader className="border-b border-blue-50">
@@ -83,13 +87,19 @@ export default function StudentFees({
             Student Payments {new Date().getFullYear()}
           </h1>
           <div className="flex items-center gap-6">
-            <Select
-              value={selectedTerm}
-              onChange={handleTermChange}
-              options={termOptions}
-              primaryColor={"blue"}
-              placeholder="Select Term"
-            />
+            {/* Custom Select Dropdown */}
+            <select
+              className="border border-gray-300 rounded-md px-3 py-2 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              value={selectedTerm.value}
+              onChange={(e) => handleTermChangeById(e.target.value)}
+            >
+              {termOptions.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+
             {balanceAmount > 0 && (
               <PaymentModal
                 fees={fees.filter((item) => item.feeStatus !== "PAID")}
@@ -100,6 +110,7 @@ export default function StudentFees({
           </div>
         </div>
       </CardHeader>
+
       <CardContent className="px-6 py-2">
         <div className="container mx-auto px-6 max-w-5xl">
           <div className="py-2">
@@ -107,10 +118,11 @@ export default function StudentFees({
               <CardHeader>
                 <CardTitle className="text-xl font-semibold text-gray-900">
                   {fees.length > 0
-                    ? ` Fees for ${selectedTerm.label}`
+                    ? `Fees for ${selectedTerm.label}`
                     : "Select the Term to see the fees"}
                 </CardTitle>
               </CardHeader>
+
               {loadingFees ? (
                 <CardContent>
                   <h2 className="flex items-center">
@@ -126,33 +138,20 @@ export default function StudentFees({
                         <table className="min-w-full divide-y divide-gray-200">
                           <thead className="bg-gray-50">
                             <tr>
-                              <th
-                                scope="col"
-                                className="px-6 py-3 text-left text-sm font-medium text-gray-500"
-                              >
+                              <th className="px-6 py-3 text-left text-sm font-medium text-gray-500">
                                 Fee Title
                               </th>
-                              <th
-                                scope="col"
-                                className="px-6 py-3 text-right text-sm font-medium text-gray-500"
-                              >
+                              <th className="px-6 py-3 text-right text-sm font-medium text-gray-500">
                                 Amount
                               </th>
-                              <th
-                                scope="col"
-                                className="px-6 py-3 text-center text-sm font-medium text-gray-500"
-                              >
+                              <th className="px-6 py-3 text-center text-sm font-medium text-gray-500">
                                 Payment Status
                               </th>
-                              <th
-                                scope="col"
-                                className="px-6 py-3 text-center text-sm font-medium text-gray-500"
-                              >
+                              <th className="px-6 py-3 text-center text-sm font-medium text-gray-500">
                                 Payment Date
                               </th>
                             </tr>
                           </thead>
-
                           <tbody className="bg-white divide-y divide-gray-200">
                             {fees.map((fee, index) => (
                               <tr key={index}>
@@ -212,7 +211,7 @@ export default function StudentFees({
                       </div>
                     </>
                   ) : (
-                    <div className="">
+                    <div>
                       <h2>No Fees Data </h2>
                     </div>
                   )}
