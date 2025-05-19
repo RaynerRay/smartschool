@@ -30,7 +30,7 @@ export default function DateRangeFilter({
     to: addDays(new Date(2024, 0, 20), 20),
   });
   // console.log(date);
-  const handleChange = (selectedDate: any) => {
+  const handleChange = (selectedDate: any) => { // eslint-disable-line @typescript-eslint/no-explicit-any
     console.log(selectedDate);
     setDate(selectedDate);
     setIsSearch(false);

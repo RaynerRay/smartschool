@@ -2,7 +2,7 @@
 import AddNewButton from "@/components/FormInputs/AddNewButton";
 import React from "react";
 
-type Option = {
+export type Option = {
   value: string;
   label: string;
 };

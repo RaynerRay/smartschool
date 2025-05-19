@@ -15,16 +15,19 @@ import { Button } from "@/components/ui/button";
 import TextInput from "@/components/FormInputs/TextInput";
 import SubmitButton from "@/components/FormInputs/SubmitButton";
 import { SubjectCreateProps } from "@/types/types";
-import FormSelectInput from "@/components/FormInputs/FormSelectInput";
+import FormSelectInput, { Option } from "@/components/FormInputs/FormSelectInput";
 
 import { createSubject } from "@/actions/subjects";
+
 export type DepartmentOption = {
   label: string;
   value: string;
 };
+
 export type DepartmentProps = {
   name: string;
 };
+
 export default function SubjectForm({
   initialContent,
   editingId,
@@ -46,8 +49,9 @@ export default function SubjectForm({
   });
 
   const [loading, setLoading] = useState(false);
-  const [selectedDepartment, setSelectedDepartment] = useState(departments[0]);
-  const types = [
+  const [selectedDepartment, setSelectedDepartment] = useState<Option>(departments[0]);
+  
+  const types: Option[] = [
     {
       label: "THEORY",
       value: "THEORY",
@@ -61,7 +65,8 @@ export default function SubjectForm({
       value: "BOTH",
     },
   ];
-  const categories = [
+  
+  const categories: Option[] = [
     {
       label: "CORE",
       value: "CORE",
@@ -87,9 +92,9 @@ export default function SubjectForm({
       value: "EXTRA_CURRICULAR",
     },
   ];
-  const [selectedCategory, setSelectedCategory] = useState<any>(categories[0]); // eslint-disable-line @typescript-eslint/no-explicit-any
-
-  const [selectedType, setSelectedType] = useState<any>(types[0]); // eslint-disable-line @typescript-eslint/no-explicit-any
+  
+  const [selectedCategory, setSelectedCategory] = useState<Option>(categories[0]);
+  const [selectedType, setSelectedType] = useState<Option>(types[0]);
 
   async function saveSubject(data: SubjectCreateProps) {
     // data.userId = userId;
@@ -115,6 +120,25 @@ export default function SubjectForm({
       console.log(error);
     }
   }
+
+  // Type-safe wrapper functions for the select inputs
+  const handleDepartmentChange = (value: Option | Option[] | null) => {
+    if (value && !Array.isArray(value)) {
+      setSelectedDepartment(value);
+    }
+  };
+
+  const handleCategoryChange = (value: Option | Option[] | null) => {
+    if (value && !Array.isArray(value)) {
+      setSelectedCategory(value);
+    }
+  };
+
+  const handleTypeChange = (value: Option | Option[] | null) => {
+    if (value && !Array.isArray(value)) {
+      setSelectedType(value);
+    }
+  };
 
   return (
     <div>
@@ -157,7 +181,7 @@ export default function SubjectForm({
                       label="Department"
                       options={departments}
                       option={selectedDepartment}
-                      setOption={setSelectedDepartment}
+                      setOption={handleDepartmentChange}
                       toolTipText="Add Department"
                       href="/dashboard/academics/departments"
                     />
@@ -184,13 +208,13 @@ export default function SubjectForm({
                       label="Category"
                       options={categories}
                       option={selectedCategory}
-                      setOption={setSelectedCategory}
+                      setOption={handleCategoryChange}
                     />
                     <FormSelectInput
                       label="Type"
                       options={types}
                       option={selectedType}
-                      setOption={setSelectedType}
+                      setOption={handleTypeChange}
                     />
                   </div>
                 </div>
